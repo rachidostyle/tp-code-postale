@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='UTF-8'>
+	
+	<title>Formulaire code/ville</title>
+	<link href="../static/bootstrap/css/jquery-ui-bootstrap.css" rel="stylesheet" type="text/css"/>
+	<link rel='stylesheet' href='../static/bootstrap/css/bootstrap.css' type="text/css"/>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+	
+	<script>
+		$(function() {
+		    $(document).ready( function() {
+			
+				$('#ville').attr('disabled','disabled');
+			
+			});	
+			$('#ville').focus( function() {
+				
+				$(this).autocomplete( "search", "" );
+				
+			});
+			
+			// OnKeyDown Function
+			$("#code").keyup(function() {
+				var zip_in = $(this);
+				var zip_box = $('#coderef');
+				
+				if (zip_in.val().length<5)
+				{
+					zip_box.removeClass('error success');
+				}
+				else if ( zip_in.val().length>5)
+				{
+					zip_box.addClass('error').removeClass('success');
+				}
+				else if ((zip_in.val().length == 5) ) 
+				{
+					
+					$.ajax({
+						url: "http://api.zippopotam.us/fr/" + zip_in.val(),
+						cache: false,
+						dataType: "json",
+						type: "GET",
+					  success: function(result, success) {
+
+
+							$('#ville').removeAttr('disabled');
+							
+							suggestions = [];
+							for ( ii in result['places']){
+								suggestions.push(result['places'][ii]['place name']);
+							}
+							$("#ville").autocomplete({ source : suggestions , delay:50, disabled: false, minLength:0 });
+							if ( suggestions.length > 0){
+								$('#ville').placeholder = suggestions[0];
+							}
+							zip_box.addClass('success').removeClass('error');
+						},
+						error: function(result, success) {
+							zip_box.removeClass('success').addClass('error');
+						}
+					});
+				}
+	});
+
+		});
+			
+	</script>
+	<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-30975659-1']);
+	  _gaq.push(['_setDomainName', 'zippopotam.us']);
+	    _gaq.push(['_trackPageview']);
+
+		  (function() {
+		      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+			      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+				      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+					    })();
+
+	</script>
+
+
+</head>
+
+<body>
+	<br/>
+	<br/>
+	<div class="container">
+	<div class="span8">
+	<div class='hero-unit'>
+		<p>Essayez de taper un code postal, par exemple <b>03200 </b>puis entrer pour affichier les villes</p>
+		<br/>
+		<form action="#" method="post" class="form fancy-form">
+
+			<fieldset>
+				<div>
+					<div id="coderef" class="control-group">
+						<label for="code">Code Postal</label>
+						<input type="text" class='' pattern="[0-9]*" name="code" id="code" placeholder="Tapez votre code postal"/>
+					</div>	
+				</div>
+				<div>
+					<div id="villebox" class="control-group" >
+						<label for="ville">Ville</label>
+						<input type="text" name="ville" id="ville" placeholder="D'abord taper votre code postal" />
+					</div>
+				</div>
+
+				<div>
+					<a href="#" class='btn btn-success btn-large' >Valider</a>
+				</div>
+			</fieldset>
+		</form>	
+	</div>
+	</div>
+	</div>
+</body>
+
+</html>
